@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_learn/RouteAndNavigator/about.dart';
-import 'package:flutter_learn/RouteAndNavigator/detail.dart';
-import 'package:event_bus/event_bus.dart';
+import 'dart:math';
 
-//1.创建全局的eventbus对象
-final eventBus = EventBus();
+import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
 
 main() => runApp(MyApp());
 
@@ -14,12 +11,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {
-        "/" : (ctx) => HomePage(),
-        "/about" : (ctx) => MyAboutPage()
-      },
       debugShowCheckedModeBanner: false,
-      initialRoute: "/",//初始路由，即首页
+      home: HomePage(),
     );
   }
 }
@@ -31,60 +24,22 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Widget'),
+        title: Text('Hero'),
       ),
-      body: HomeContent(),
-    );
-  }
-}
-
-class HomeContent extends StatefulWidget {
-  const HomeContent({Key? key}) : super(key: key);
-
-  @override
-  State<HomeContent> createState() => _HomeContentState();
-}
-
-class _HomeContentState extends State<HomeContent> {
-  String? _message;
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Text('$_message'),
-          ElevatedButton(
-              child: Text("跳转到详情"),
-              onPressed: () => _jumpToDetail(context)),
-          ElevatedButton(
-              child: Text("跳转到关于"),
-              onPressed: () => _jumpToAbout(context)),
-        ],
+      body: Center(
+        child: GridView(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 16/9,
+          ),
+          children: List.generate(20, (index){
+            return Image.network('https://picsum.photos/500/500?random=$index');
+          }),
+        ),
       ),
     );
   }
-
-  //1.普通的跳转方式
-  void _jumpToDetail(BuildContext context) {
-    Future future = Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
-      return MyDetailPage("Passed from mainPage");
-    }));
-    future.then((value){
-      setState(() {
-        _message = value;
-      });
-    });
-  }
-
-  //2.使用命名路由进行跳转
-  void _jumpToAbout(BuildContext context) {
-    Future future = Navigator.of(context).push(MaterialPageRoute(builder: (ctx) {
-      return MyAboutPage();
-    }));
-    future.then((value){
-      setState(() {
-        _message = value;
-      });
-    });
-  }
 }
+
